@@ -1,0 +1,41 @@
+---
+import { profile } from '../data/profile';
+import { resumePdf, url } from '../lib/site';
+---
+
+<section class="section contact" id="contact" aria-labelledby="contact-title">
+  <div class="container inner">
+    <p class="eyebrow">Contact</p>
+    <h2 class="section-title" id="contact-title">Let's build something playable</h2>
+    <p class="section-lede">
+      Open to gameplay, multiplayer and tools engineering roles. The fastest way to reach me is email.
+    </p>
+    <div class="cta">
+      <a class="btn btn-primary" href={`mailto:${profile.email}`}>{profile.email}</a>
+      <a class="btn btn-ghost" href={profile.linkedin} target="_blank" rel="me noopener">LinkedIn</a>
+      <a class="btn btn-ghost" href={profile.github} target="_blank" rel="me noopener">GitHub</a>
+      <a class="btn btn-ghost" href={url(resumePdf)} download>Download resume (PDF)</a>
+    </div>
+  </div>
+</section>
+
+<style>
+  .contact {
+    text-align: center;
+    background:
+      radial-gradient(50% 80% at 50% 100%, color-mix(in srgb, var(--accent) 12%, transparent), transparent 70%),
+      var(--bg);
+  }
+  .section-lede {
+    margin-inline: auto;
+  }
+  .cta {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 12px;
+  }
+  .cta .btn-primary {
+    overflow-wrap: anywhere;
+  }
+</style>

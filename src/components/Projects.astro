@@ -1,0 +1,102 @@
+---
+import ProjectCard from './ProjectCard.astro';
+import { getProjects, categoryLabel } from '../lib/site';
+
+const projects = await getProjects();
+const featured = projects.filter((p) => p.data.featured && p.data.cover);
+const rest = projects.filter((p) => !featured.includes(p));
+const categories = [...new Set(rest.map((p) => p.data.category))];
+---
+
+<section class="section" id="projects" aria-labelledby="projects-title">
+  <div class="container">
+    <p class="eyebrow">Projects</p>
+    <h2 class="section-title" id="projects-title">Selected work</h2>
+    <p class="section-lede">
+      2026 personal work from my indie label BreadCrumbs, followed by professional projects. Employer work is described
+      at the engineering level only.
+    </p>
+
+    <div class="featured">
+      {featured.map((p) => <ProjectCard project={p} large />)}
+    </div>
+
+    {
+      rest.length > 0 && (
+        <>
+          <div class="filters" role="group" aria-label="Filter projects" hidden={categories.length < 2}>
+            <button type="button" aria-pressed="true" data-filter="all">
+              All
+            </button>
+            {categories.map((c) => (
+              <button type="button" aria-pressed="false" data-filter={c}>
+                {categoryLabel[c]}
+              </button>
+            ))}
+          </div>
+          <div class="grid" data-project-grid>
+            {rest.map((p) => (
+              <ProjectCard project={p} />
+            ))}
+          </div>
+        </>
+      )
+    }
+  </div>
+</section>
+
+<script>
+  const buttons = document.querySelectorAll<HTMLButtonElement>('[data-filter]');
+  const cards = document.querySelectorAll<HTMLElement>('[data-project-grid] [data-category]');
+  buttons.forEach((btn) =>
+    btn.addEventListener('click', () => {
+      const f = btn.dataset.filter;
+      buttons.forEach((b) => b.setAttribute('aria-pressed', String(b === btn)));
+      cards.forEach((c) => (c.hidden = f !== 'all' && c.dataset.category !== f));
+    }),
+  );
+</script>
+
+<style>
+  .featured {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 24px;
+    margin-bottom: 48px;
+  }
+  .filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 20px;
+  }
+  .filters button {
+    font: inherit;
+    font-size: 0.88rem;
+    padding: 7px 16px;
+    border-radius: 999px;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--text-muted);
+    cursor: pointer;
+  }
+  .filters button:hover {
+    color: var(--text);
+    border-color: var(--accent);
+  }
+  .filters button[aria-pressed='true'] {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: var(--accent-ink);
+  }
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr));
+    gap: 20px;
+  }
+  @media (max-width: 860px) {
+    .featured {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

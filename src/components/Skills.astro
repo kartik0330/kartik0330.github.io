@@ -1,0 +1,46 @@
+---
+import { skills } from '../data/skills';
+---
+
+<section class="section" id="skills" aria-labelledby="skills-title">
+  <div class="container">
+    <p class="eyebrow">Skills</p>
+    <h2 class="section-title" id="skills-title">Toolbox</h2>
+    <div class="groups">
+      {
+        skills.map((g) => (
+          <div class="group">
+            <h3>{g.group}</h3>
+            <ul class="chip-list">
+              {g.items.map((s) => (
+                <li class="chip">{s}</li>
+              ))}
+            </ul>
+          </div>
+        ))
+      }
+    </div>
+  </div>
+</section>
+
+<style>
+  .groups {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 320px), 1fr));
+    gap: 16px;
+  }
+  .group {
+    padding: 18px 20px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--surface);
+  }
+  h3 {
+    font-size: 0.95rem;
+    margin-bottom: 12px;
+  }
+  .chip {
+    font-size: 0.8rem;
+    color: var(--text);
+  }
+</style>

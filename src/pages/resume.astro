@@ -1,0 +1,350 @@
+---
+// Print-ready resume built from the same data as the site.
+// `npm run pdf` exports it to public/Kartik_Mangal_Resume_2026.pdf.
+import { profile } from '../data/profile';
+import { experience } from '../data/experience';
+import { skills } from '../data/skills';
+import { getProjects, resumePdf, url } from '../lib/site';
+
+const projects = await getProjects();
+const workProjects = (org: string) =>
+  projects.filter((p) => p.data.category === 'professional' && p.data.org === org);
+const personal = projects.filter((p) => p.data.category === 'personal');
+// Absolute so the link still works inside the exported PDF.
+const siteHref = Astro.site ? new URL(import.meta.env.BASE_URL, Astro.site).href : '';
+const site = siteHref.replace(/^https?:\/\//, '').replace(/\/$/, '');
+const linkedin = profile.linkedin.replace(/^https?:\/\/(www\.)?/, '');
+const github = profile.github.replace(/^https?:\/\//, '');
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Kartik Mangal | Resume</title>
+    <meta name="description" content={profile.summary} />
+    <meta name="robots" content="noindex" />
+    <link rel="icon" href={url('favicon.svg')} type="image/svg+xml" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@600;700&display=swap"
+    />
+  </head>
+  <body>
+    <div class="toolbar">
+      <a href={url('')}>← Portfolio</a>
+      <span class="spacer"></span>
+      <a class="button" href={url(resumePdf)} download>Download PDF</a>
+      <button class="button ghost" type="button" onclick="window.print()">Print</button>
+    </div>
+
+    <main class="page">
+      <header>
+        <h1>{profile.name}</h1>
+        <p class="headline">{profile.role} · {profile.headline}</p>
+        <p class="contact">
+          <span>{profile.location}</span>
+          {profile.phone && <span>{profile.phone}</span>}
+          <a href={`mailto:${profile.email}`}>{profile.email}</a>
+          <a href={profile.linkedin}>{linkedin}</a>
+          <a href={profile.github}>{github}</a>
+          {site && <a href={siteHref}>{site}</a>}
+        </p>
+      </header>
+
+      <section>
+        <h2>Summary</h2>
+        <p>{profile.summary}</p>
+      </section>
+
+      <section>
+        <h2>Experience</h2>
+        {
+          experience.map((role) => (
+            <div class="item">
+              <div class="row">
+                <h3>
+                  {role.title}, <span class="org">{role.org}</span>
+                </h3>
+                <span class="date">
+                  {role.start} – {role.end}
+                </span>
+              </div>
+              <p class="stack">{role.stack.join(' · ')}</p>
+              {workProjects(role.org).length === 0 ? (
+                <ul>
+                  <li>{role.summary}</li>
+                </ul>
+              ) : (
+                workProjects(role.org).map((p) => (
+                  <div class="sub">
+                    <p class="subhead">
+                      {p.data.title}
+                      {p.data.period !== `${role.start} – ${role.end}` && <span class="date"> · {p.data.period}</span>}
+                    </p>
+                    <ul>
+                      {p.data.highlights.map((h) => (
+                        <li>{h}</li>
+                      ))}
+                    </ul>
+                  </div>
+                ))
+              )}
+            </div>
+          ))
+        }
+      </section>
+
+      {
+        personal.length > 0 && (
+          <section>
+            <h2>Independent Projects: {profile.studio.name}</h2>
+            {personal.map((p) => (
+              <div class="item">
+                <div class="row">
+                  <h3>{p.data.title}</h3>
+                  <span class="date">{p.data.period}</span>
+                </div>
+                <p class="stack">{p.data.stack.slice(0, 7).join(' · ')}</p>
+                <ul>
+                  {p.data.highlights.slice(0, 3).map((h) => (
+                    <li>{h}</li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+          </section>
+        )
+      }
+
+      <section>
+        <h2>Technical Skills</h2>
+        <dl class="skills">
+          {
+            skills.map((g) => (
+              <div>
+                <dt>{g.group}</dt>
+                <dd>{g.items.join(', ')}</dd>
+              </div>
+            ))
+          }
+        </dl>
+      </section>
+
+      <section>
+        <h2>Education</h2>
+        <div class="row">
+          <h3>{profile.education.school}</h3>
+          <span class="date">{profile.education.period}</span>
+        </div>
+        <p>{profile.education.degree} · {profile.education.location}</p>
+      </section>
+    </main>
+  </body>
+</html>
+
+<style is:global>
+  :root {
+    color-scheme: light;
+    --ink: #12161f;
+    --muted: #4b5466;
+    --rule: #d8dde7;
+    --accent: #006f96;
+  }
+  * {
+    box-sizing: border-box;
+  }
+  body {
+    margin: 0;
+    background: #e9ecf2;
+    color: var(--ink);
+    font-family: 'Inter', system-ui, sans-serif;
+    font-size: 10pt;
+    line-height: 1.45;
+  }
+  .toolbar {
+    position: sticky;
+    top: 0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 16px;
+    background: #ffffffe6;
+    backdrop-filter: blur(8px);
+    border-bottom: 1px solid var(--rule);
+    font-size: 14px;
+  }
+  .toolbar a {
+    color: var(--accent);
+  }
+  .spacer {
+    flex: 1;
+  }
+  .button {
+    font: inherit;
+    font-weight: 600;
+    padding: 7px 14px;
+    border-radius: 999px;
+    border: 1px solid var(--accent);
+    background: var(--accent);
+    color: #fff !important;
+    text-decoration: none;
+    cursor: pointer;
+  }
+  .button.ghost {
+    background: transparent;
+    color: var(--accent) !important;
+  }
+  .page {
+    width: 100%;
+    max-width: 210mm;
+    margin: 24px auto;
+    padding: 14mm 15mm;
+    background: #fff;
+    box-shadow: 0 10px 40px rgb(16 24 40 / 0.12);
+  }
+  header {
+    border-bottom: 2px solid var(--ink);
+    padding-bottom: 8px;
+    margin-bottom: 10px;
+  }
+  h1 {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 24pt;
+    line-height: 1;
+    margin: 0 0 4px;
+    letter-spacing: -0.02em;
+  }
+  .headline {
+    margin: 0 0 6px;
+    font-weight: 600;
+    color: var(--accent);
+  }
+  .contact {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2px 14px;
+    margin: 0;
+    color: var(--muted);
+    font-size: 9pt;
+  }
+  .contact a {
+    color: var(--muted);
+    text-decoration: none;
+  }
+  section {
+    margin-top: 10px;
+  }
+  h2 {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 10.5pt;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--accent);
+    border-bottom: 1px solid var(--rule);
+    padding-bottom: 2px;
+    margin: 0 0 6px;
+  }
+  h3 {
+    font-size: 10.5pt;
+    margin: 0;
+  }
+  .org {
+    font-weight: 500;
+  }
+  p {
+    margin: 0 0 4px;
+  }
+  .item {
+    margin-bottom: 8px;
+    break-inside: avoid;
+  }
+  .row {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 12px;
+  }
+  .date {
+    color: var(--muted);
+    font-size: 9pt;
+    white-space: nowrap;
+    font-weight: 400;
+  }
+  .stack {
+    color: var(--muted);
+    font-size: 8.8pt;
+    margin-bottom: 3px;
+  }
+  .sub {
+    margin-top: 3px;
+  }
+  .subhead {
+    font-weight: 600;
+    margin: 0 0 1px;
+  }
+  ul {
+    margin: 0;
+    padding-left: 14px;
+  }
+  li {
+    margin-bottom: 1.5px;
+  }
+  .skills {
+    margin: 0;
+    display: grid;
+    gap: 2px;
+  }
+  .skills div {
+    display: grid;
+    grid-template-columns: 46mm 1fr;
+    gap: 8px;
+  }
+  .skills dt {
+    font-weight: 600;
+  }
+  .skills dd {
+    margin: 0;
+  }
+
+  @media (max-width: 640px) {
+    .page {
+      margin: 0;
+      padding: 20px 16px;
+      box-shadow: none;
+    }
+    .row {
+      flex-direction: column;
+      gap: 0;
+    }
+    .skills div {
+      grid-template-columns: 1fr;
+      gap: 0;
+    }
+  }
+
+  @page {
+    size: A4;
+    margin: 12mm 14mm;
+  }
+  @media print {
+    body {
+      background: #fff;
+    }
+    .toolbar {
+      display: none;
+    }
+    .page {
+      margin: 0;
+      padding: 0;
+      max-width: none;
+      box-shadow: none;
+    }
+    a {
+      color: inherit;
+    }
+  }
+</style>

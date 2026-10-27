@@ -1,0 +1,23 @@
+{
+  "name": "kartik-mangal-portfolio",
+  "type": "module",
+  "version": "1.0.0",
+  "private": true,
+  "engines": {
+    "node": ">=22.23.4"
+  },
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "pdf": "node scripts/export-resume-pdf.mjs",
+    "astro": "astro"
+  },
+  "dependencies": {
+    "astro": "^7.4.2",
+    "three": "^0.186.1"
+  },
+  "devDependencies": {
+    "@types/three": "^0.186.0"
+  }
+}

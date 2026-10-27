@@ -1,0 +1,151 @@
+---
+import { experience } from '../data/experience';
+import { getProjects, url } from '../lib/site';
+
+const projects = await getProjects();
+const projectsFor = (org: string) =>
+  projects.filter((p) => p.data.category === 'professional' && p.data.org === org);
+---
+
+<section class="section" id="experience" aria-labelledby="experience-title">
+  <div class="container">
+    <p class="eyebrow">Experience</p>
+    <h2 class="section-title" id="experience-title">Where I've shipped games</h2>
+    <p class="section-lede">Six years across multiplayer, real-money and mobile titles, from Roblox and PUN to Photon Fusion.</p>
+
+    <ol class="timeline">
+      {
+        experience.map((role, i) => (
+          <li class:list={['role', { current: i === 0 }]}>
+            <div class="when">
+              {role.start} – {role.end}
+            </div>
+            <div class="card">
+              <h3>
+                {role.title} <span class="at">@ {role.org}</span>
+              </h3>
+              <p class="summary">{role.summary}</p>
+              {projectsFor(role.org).length > 0 && (
+                <ul class="projects">
+                  {projectsFor(role.org).map((p) => (
+                    <li>
+                      <a href={url(`projects/${p.id}/`)}>{p.data.title}</a>
+                      <span>{p.data.period}</span>
+                    </li>
+                  ))}
+                </ul>
+              )}
+              <ul class="chip-list">
+                {role.stack.map((s) => (
+                  <li class="chip">{s}</li>
+                ))}
+              </ul>
+            </div>
+          </li>
+        ))
+      }
+    </ol>
+  </div>
+</section>
+
+<style>
+  .timeline {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    position: relative;
+  }
+  .timeline::before {
+    content: '';
+    position: absolute;
+    left: 168px;
+    top: 8px;
+    bottom: 8px;
+    width: 2px;
+    background: linear-gradient(var(--accent), var(--accent-2) 60%, var(--border));
+    opacity: 0.6;
+  }
+  .role {
+    display: grid;
+    grid-template-columns: 150px 1fr;
+    gap: 40px;
+    position: relative;
+    padding-bottom: 28px;
+  }
+  .role::before {
+    content: '';
+    position: absolute;
+    left: 162px;
+    top: 8px;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: var(--bg);
+    border: 2px solid var(--accent);
+  }
+  .role.current::before {
+    background: var(--accent);
+    box-shadow: var(--glow);
+  }
+  .when {
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    padding-top: 4px;
+    text-align: right;
+  }
+  .card {
+    padding: 20px 22px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--surface);
+  }
+  h3 {
+    font-size: 1.15rem;
+    margin-bottom: 0.35rem;
+  }
+  .at {
+    color: var(--accent);
+    font-weight: 500;
+  }
+  .summary {
+    color: var(--text-muted);
+    margin-bottom: 0.9rem;
+  }
+  .projects {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 14px;
+    display: grid;
+    gap: 6px;
+  }
+  .projects li {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+    font-size: 0.95rem;
+  }
+  .projects span {
+    color: var(--text-muted);
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+  }
+  @media (max-width: 680px) {
+    .timeline::before {
+      left: 6px;
+    }
+    .role {
+      grid-template-columns: 1fr;
+      gap: 8px;
+      padding-left: 28px;
+    }
+    .role::before {
+      left: 0;
+      top: 6px;
+    }
+    .when {
+      text-align: left;
+    }
+  }
+</style>

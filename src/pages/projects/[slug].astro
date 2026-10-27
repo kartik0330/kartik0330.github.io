@@ -1,0 +1,255 @@
+---
+import { Image, getImage } from 'astro:assets';
+import { render } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import { categoryLabel, getProjects, url, type Project } from '../../lib/site';
+
+export async function getStaticPaths() {
+  const projects = await getProjects();
+  return projects.map((project, i) => ({
+    params: { slug: project.id },
+    props: {
+      project,
+      prev: projects[i - 1] ?? null,
+      next: projects[i + 1] ?? null,
+    },
+  }));
+}
+
+interface Props {
+  project: Project;
+  prev: Project | null;
+  next: Project | null;
+}
+
+const { project, prev, next } = Astro.props;
+const { data } = project;
+const { Content } = await render(project);
+const og = data.cover ? (await getImage({ src: data.cover, width: 1200, format: 'jpeg' })).src : undefined;
+---
+
+<Base title={`${data.title} | Kartik Mangal`} description={data.summary} ogImage={og}>
+  <article class="container project">
+    <a class="back" href={url('#projects')}>← All projects</a>
+
+    <header class="head">
+      <p class="eyebrow">{categoryLabel[data.category]} · {data.org}</p>
+      <h1>{data.title}</h1>
+      <p class="lede">{data.summary}</p>
+      <dl class="meta">
+        <div><dt>Period</dt><dd>{data.period}</dd></div>
+        {data.role && <div><dt>Role</dt><dd>{data.role}</dd></div>}
+        <div>
+          <dt>Stack</dt>
+          <dd>
+            <ul class="chip-list">{data.stack.map((s) => <li class="chip">{s}</li>)}</ul>
+          </dd>
+        </div>
+      </dl>
+      {
+        data.links.length > 0 && (
+          <p class="links">
+            {data.links.map((l) => (
+              <a class="btn btn-ghost" href={l.href} target="_blank" rel="noopener">
+                {l.label}
+              </a>
+            ))}
+          </p>
+        )
+      }
+    </header>
+
+    {
+      data.cover && (
+        <figure class="cover">
+          <Image
+            src={data.cover}
+            alt={data.coverAlt ?? data.title}
+            widths={[640, 1000, 1400]}
+            sizes="(max-width: 1120px) 100vw, 1080px"
+            loading="eager"
+          />
+        </figure>
+      )
+    }
+
+    <div class="layout">
+      <section class="highlights" aria-labelledby="hl-title">
+        <h2 id="hl-title">Highlights</h2>
+        <ul>{data.highlights.map((h) => <li>{h}</li>)}</ul>
+      </section>
+      <div class="prose">
+        <Content />
+      </div>
+    </div>
+
+    {
+      data.gallery.length > 0 && (
+        <section class="gallery" aria-labelledby="gallery-title">
+          <h2 id="gallery-title">Gallery</h2>
+          <div class="shots">
+            {data.gallery.map((g) => (
+              <figure>
+                <a href={g.src.src} target="_blank" rel="noopener">
+                  <Image src={g.src} alt={g.caption} widths={[480, 800]} sizes="(max-width: 700px) 100vw, 520px" />
+                </a>
+                <figcaption>{g.caption}</figcaption>
+              </figure>
+            ))}
+          </div>
+        </section>
+      )
+    }
+
+    <nav class="pager" aria-label="More projects">
+      {prev ? <a href={url(`projects/${prev.id}/`)}>← {prev.data.title}</a> : <span></span>}
+      {next && <a href={url(`projects/${next.id}/`)}>{next.data.title} →</a>}
+    </nav>
+  </article>
+</Base>
+
+<style>
+  .project {
+    padding-block: 40px 80px;
+  }
+  .back {
+    display: inline-block;
+    margin-bottom: 28px;
+    text-decoration: none;
+    font-size: 0.92rem;
+  }
+  .head h1 {
+    font-size: clamp(2.2rem, 5vw, 3.4rem);
+  }
+  .lede {
+    font-size: 1.15rem;
+    color: var(--text-muted);
+    max-width: 62ch;
+  }
+  .meta {
+    display: grid;
+    grid-template-columns: auto auto 1fr;
+    gap: 16px 40px;
+    margin: 28px 0;
+  }
+  dt {
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--accent);
+    margin-bottom: 4px;
+  }
+  dd {
+    margin: 0;
+  }
+  .links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  .cover {
+    margin: 12px 0 48px;
+    border-radius: var(--radius);
+    overflow: hidden;
+    border: 1px solid var(--border);
+  }
+  .layout {
+    display: grid;
+    grid-template-columns: 1fr 1.25fr;
+    gap: 48px;
+    align-items: start;
+  }
+  .highlights {
+    padding: 24px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--surface);
+    position: sticky;
+    top: 88px;
+  }
+  .highlights h2 {
+    font-size: 1.1rem;
+  }
+  .highlights ul {
+    margin: 0;
+    padding-left: 1.1em;
+    display: grid;
+    gap: 10px;
+    color: var(--text-muted);
+    font-size: 0.95rem;
+  }
+  .highlights li::marker {
+    color: var(--accent);
+  }
+  .prose :global(h2) {
+    font-size: 1.4rem;
+    margin-top: 1.6em;
+  }
+  .prose :global(h2:first-child) {
+    margin-top: 0;
+  }
+  .prose :global(p),
+  .prose :global(li) {
+    color: var(--text-muted);
+  }
+  .prose :global(strong) {
+    color: var(--text);
+  }
+  .prose :global(code) {
+    font-family: var(--font-mono);
+    font-size: 0.88em;
+    background: var(--surface-2);
+    padding: 1px 6px;
+    border-radius: 6px;
+  }
+  .gallery {
+    margin-top: 64px;
+  }
+  .gallery h2 {
+    font-size: 1.4rem;
+  }
+  .shots {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 320px), 1fr));
+    gap: 20px;
+  }
+  figure {
+    margin: 0;
+  }
+  .shots :global(img) {
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border);
+    aspect-ratio: 16 / 10;
+    object-fit: cover;
+    width: 100%;
+  }
+  figcaption {
+    margin-top: 8px;
+    font-size: 0.85rem;
+    color: var(--text-muted);
+  }
+  .pager {
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+    margin-top: 64px;
+    padding-top: 24px;
+    border-top: 1px solid var(--border);
+  }
+  .pager a {
+    text-decoration: none;
+    font-weight: 500;
+  }
+  @media (max-width: 860px) {
+    .layout {
+      grid-template-columns: 1fr;
+    }
+    .highlights {
+      position: static;
+    }
+    .meta {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

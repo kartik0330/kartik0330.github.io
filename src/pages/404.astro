@@ -1,0 +1,26 @@
+---
+import Base from '../layouts/Base.astro';
+import { url } from '../lib/site';
+---
+
+<Base title="Not found | Kartik Mangal">
+  <section class="container nf">
+    <p class="eyebrow">404</p>
+    <h1>This level hasn't been greyboxed yet.</h1>
+    <p>The page you're looking for doesn't exist.</p>
+    <a class="btn btn-primary" href={url('')}>Back to the portfolio</a>
+  </section>
+</Base>
+
+<style>
+  .nf {
+    padding-block: 120px;
+    text-align: center;
+  }
+  h1 {
+    font-size: clamp(1.8rem, 4vw, 2.6rem);
+  }
+  p {
+    color: var(--text-muted);
+  }
+</style>

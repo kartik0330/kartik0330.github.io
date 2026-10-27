@@ -1,0 +1,68 @@
+---
+import { profile } from '../data/profile';
+const facts = [
+  { k: 'Role', v: `${profile.role}, Liquidnitro Games` },
+  { k: 'Based in', v: profile.location },
+  { k: 'Experience', v: `${profile.yearsExperience}+ years · 4 studios` },
+  { k: 'Indie label', v: profile.studio.name },
+  { k: 'Education', v: 'B.Tech ECE, IIIT Jabalpur' },
+];
+---
+
+<section class="section" id="about" aria-labelledby="about-title">
+  <div class="container about">
+    <div>
+      <p class="eyebrow">About</p>
+      <h2 class="section-title" id="about-title">Gameplay engineer with a tools habit</h2>
+      {profile.about.map((p) => <p class="para">{p}</p>)}
+    </div>
+    <dl class="facts">
+      {
+        facts.map((f) => (
+          <div>
+            <dt>{f.k}</dt>
+            <dd>{f.v}</dd>
+          </div>
+        ))
+      }
+    </dl>
+  </div>
+</section>
+
+<style>
+  .about {
+    display: grid;
+    grid-template-columns: 1.6fr 1fr;
+    gap: clamp(32px, 6vw, 72px);
+    align-items: start;
+  }
+  .para {
+    color: var(--text-muted);
+    max-width: 62ch;
+  }
+  .facts {
+    margin: 0;
+    padding: 24px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--surface);
+    display: grid;
+    gap: 16px;
+  }
+  dt {
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--accent);
+  }
+  dd {
+    margin: 2px 0 0;
+    font-weight: 500;
+  }
+  @media (max-width: 820px) {
+    .about {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

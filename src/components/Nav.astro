@@ -1,0 +1,236 @@
+---
+import { url } from '../lib/site';
+
+const links = [
+  { href: '#about', label: 'About' },
+  { href: '#experience', label: 'Experience' },
+  { href: '#projects', label: 'Projects' },
+  { href: '#year', label: '2026' },
+  { href: '#skills', label: 'Skills' },
+  { href: '#contact', label: 'Contact' },
+];
+// Section anchors point at the home page so the nav also works from project pages.
+const home = url('');
+---
+
+<header class="nav">
+  <div class="container nav-inner">
+    <a class="brand" href={home} aria-label="Kartik Mangal, home">
+      <span class="brand-mark" aria-hidden="true">KM</span>
+      <span class="brand-name">Kartik Mangal</span>
+    </a>
+
+    <nav aria-label="Primary">
+      <ul class="links">
+        {links.map((l) => <li><a href={`${home}${l.href}`}>{l.label}</a></li>)}
+      </ul>
+    </nav>
+
+    <div class="actions">
+      <button class="theme-toggle" type="button" aria-label="Toggle colour theme" data-theme-toggle>
+        <svg class="icon-sun" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"
+          ><circle cx="12" cy="12" r="4.5" fill="currentColor"></circle><g stroke="currentColor" stroke-width="2" stroke-linecap="round"
+            ><path d="M12 2v2M12 20v2M2 12h2M20 12h2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"></path></g
+          ></svg
+        >
+        <svg class="icon-moon" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"
+          ><path d="M20 14.5A8.5 8.5 0 0 1 9.5 4a8.5 8.5 0 1 0 10.5 10.5Z" fill="currentColor"></path></svg
+        >
+      </button>
+      <a class="btn btn-primary resume-btn" href={url('resume/')}>Resume</a>
+
+      <details class="menu">
+        <summary aria-label="Open menu">
+          <span></span><span></span><span></span>
+        </summary>
+        <ul>
+          {links.map((l) => <li><a href={`${home}${l.href}`}>{l.label}</a></li>)}
+        </ul>
+      </details>
+    </div>
+  </div>
+</header>
+
+<script>
+  const btn = document.querySelector<HTMLButtonElement>('[data-theme-toggle]');
+  btn?.addEventListener('click', () => {
+    const root = document.documentElement;
+    const current =
+      root.dataset.theme ?? (matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark');
+    const next = current === 'light' ? 'dark' : 'light';
+    root.dataset.theme = next;
+    try {
+      localStorage.setItem('theme', next);
+    } catch {}
+  });
+
+  // Close the mobile menu after picking a link.
+  document.querySelectorAll<HTMLAnchorElement>('.menu a').forEach((a) =>
+    a.addEventListener('click', () => a.closest('details')?.removeAttribute('open')),
+  );
+</script>
+
+<style>
+  .nav {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    backdrop-filter: blur(12px);
+    background: color-mix(in srgb, var(--bg) 78%, transparent);
+    border-bottom: 1px solid color-mix(in srgb, var(--border) 70%, transparent);
+  }
+  .nav-inner {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    height: 64px;
+  }
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: var(--text);
+    text-decoration: none;
+    font-family: var(--font-display);
+    font-weight: 600;
+  }
+  .brand-mark {
+    display: grid;
+    place-items: center;
+    width: 34px;
+    height: 34px;
+    border-radius: 9px;
+    border: 1px solid var(--accent);
+    color: var(--accent);
+    font-size: 0.85rem;
+    box-shadow: var(--glow);
+  }
+  nav {
+    margin-left: auto;
+  }
+  .links {
+    display: flex;
+    gap: 4px;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .links a {
+    color: var(--text-muted);
+    text-decoration: none;
+    font-size: 0.92rem;
+    padding: 6px 10px;
+    border-radius: 8px;
+  }
+  .links a:hover {
+    color: var(--text);
+    background: var(--surface);
+  }
+  .actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .resume-btn {
+    padding: 8px 16px;
+    font-size: 0.88rem;
+  }
+  .theme-toggle {
+    display: grid;
+    place-items: center;
+    width: 38px;
+    height: 38px;
+    border-radius: 999px;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--text-muted);
+    cursor: pointer;
+  }
+  .theme-toggle:hover {
+    color: var(--text);
+    border-color: var(--accent);
+  }
+  .icon-sun {
+    display: none;
+  }
+  :global(:root[data-theme='light']) .icon-sun {
+    display: block;
+  }
+  :global(:root[data-theme='light']) .icon-moon {
+    display: none;
+  }
+  @media (prefers-color-scheme: light) {
+    :global(:root:not([data-theme='dark'])) .icon-sun {
+      display: block;
+    }
+    :global(:root:not([data-theme='dark'])) .icon-moon {
+      display: none;
+    }
+  }
+
+  .menu {
+    display: none;
+    position: relative;
+  }
+  .menu summary {
+    list-style: none;
+    display: grid;
+    gap: 4px;
+    width: 38px;
+    height: 38px;
+    place-content: center;
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    cursor: pointer;
+  }
+  .menu summary::-webkit-details-marker {
+    display: none;
+  }
+  .menu summary span {
+    display: block;
+    width: 16px;
+    height: 2px;
+    background: var(--text);
+    border-radius: 2px;
+  }
+  .menu ul {
+    position: absolute;
+    right: 0;
+    top: 46px;
+    min-width: 180px;
+    list-style: none;
+    margin: 0;
+    padding: 8px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    box-shadow: 0 16px 40px rgb(0 0 0 / 0.35);
+  }
+  .menu a {
+    display: block;
+    padding: 8px 12px;
+    color: var(--text);
+    text-decoration: none;
+    border-radius: 8px;
+  }
+  .menu a:hover {
+    background: var(--surface-2);
+  }
+
+  @media (max-width: 860px) {
+    nav {
+      display: none;
+    }
+    .actions {
+      margin-left: auto;
+    }
+    .menu {
+      display: block;
+    }
+  }
+  @media (max-width: 420px) {
+    .brand-name {
+      display: none;
+    }
+  }
+</style>
