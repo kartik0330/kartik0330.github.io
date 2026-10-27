@@ -2,7 +2,7 @@
 import { Image, getImage } from 'astro:assets';
 import { render } from 'astro:content';
 import Base from '../../layouts/Base.astro';
-import { categoryLabel, getProjects, url, type Project } from '../../lib/site';
+import { categoryLabel, getProjects, statusLabel, url, type Project } from '../../lib/site';
 
 export async function getStaticPaths() {
   const projects = await getProjects();
@@ -34,7 +34,10 @@ const og = data.cover ? (await getImage({ src: data.cover, width: 1200, format: 
 
     <header class="head">
       <p class="eyebrow">{categoryLabel[data.category]} · {data.org}</p>
-      <h1>{data.title}</h1>
+      <h1>
+        {data.title}
+        {data.status && <span class:list={['status-badge', data.status]}>{statusLabel[data.status]}</span>}
+      </h1>
       <p class="lede">{data.summary}</p>
       <dl class="meta">
         <div><dt>Period</dt><dd>{data.period}</dd></div>

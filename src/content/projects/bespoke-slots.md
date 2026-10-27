@@ -10,10 +10,9 @@ stack: [Unity 3D, C#, NGUI, Spine, SVN, Jenkins]
 highlights:
   - Developed three categories of real-money slot games for web and mobile.
   - Integrated art, multi-lingual fonts and animation using NGUI and the Spine controller.
-  - Implemented robust gameplay features in C# and Unity following SOLID principles, OOP and design patterns.
   - Carried out QA testing, debugging and bug-fixing.
   - Optimised assets for performance and compatibility across a wide range of devices.
-order: 4
+order: 7
 ---
 
 ## Overview

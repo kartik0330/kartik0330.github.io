@@ -1,44 +1,42 @@
 ---
 title: Blockout Studio
-summary: An AI-assisted level-greyboxing tool, shipped as a Unity package, that turns a reference image or a prompt into a themed, playable greybox level.
+summary: "Sketch in, playable level out. A Unity tool I'm building that turns a reference image or a one-line prompt into a greybox level you can walk around in minutes."
 category: personal
-org: BreadCrumbs (indie)
+org: Solo project
 role: Solo developer
-period: Sep 2026
+period: Sep 2026 – Present
 year: 2026
-stack: [Unity Editor tooling, UPM package, C#, Python, pywebview, Preact, HTTP/SSE bridge, Blender, Claude Code]
+status: in-progress
+stack: [Unity Editor tooling, C#, UPM package, Python, Preact, Blender, Claude Code]
 highlights:
-  - Built Blockout Studio, an embeddable Unity package that turns a reference image or text prompt into a dimensioned, playable greybox level.
-  - Built a Python and Preact desktop app (pywebview) that talks to a running Unity Editor over a local HTTP/SSE bridge, with Blender sync for hand edits.
-  - Added a Theme Kit that restyles a whole level from a single reference image, and used it to build the "Water Gardens" demo level.
-  - About 17k lines across the tool, C# level builders and evals, written alongside a plain-language guide for designers.
+  - Building an embeddable Unity package that turns a reference image or text prompt into a dimensioned, playable greybox level with colliders, clip walls and out-of-bounds zones.
+  - Built a desktop studio (Python and Preact) that drives a running Unity Editor over a local bridge, with Blender sync for hand edits.
+  - Added a Theme Kit that restyles a whole level from a single reference image.
 cover: ../../assets/projects/blockout-studio/cover.png
 coverAlt: Overhead view of a generated greybox level with platforms, walls, a water pool and coloured gameplay zones
 gallery:
   - src: ../../assets/projects/blockout-studio/before.png
     caption: Before. A hand-built test room.
   - src: ../../assets/projects/blockout-studio/after.png
-    caption: After. A full level rebuilt from a reference layout by Blockout Studio.
+    caption: After. A full level rebuilt from a reference layout.
   - src: ../../assets/projects/blockout-studio/seethrough-play.png
     caption: Playing the generated level in-engine
 featured: true
-order: 2
+order: 3
 ---
 
-## Why I built it
+## Why I'm building it
 
-Greyboxing a level by hand is slow, and the first version is almost always thrown away. I wanted to go from a sketch or a reference map to something I could actually play in minutes, then iterate on it.
+Greyboxing by hand is slow, and the first version almost always gets thrown away. I want to go from a sketch to something I can play in minutes, then spend my time iterating on the fun instead of placing cubes.
 
-## How it works
+## How it works today
 
 1. **Input:** a reference image, a sketch or a text prompt.
-2. **Layout:** the image is turned into a dimensioned layout of floors, walls, ramps and zones.
-3. **Build:** C# builders inside the Unity Editor generate the greybox, with colliders, player-only clip walls and out-of-bounds zones.
-4. **Theme:** the Theme Kit restyles the level from a single reference image.
-5. **Iterate:** a Python and Preact desktop app manages projects and candidates, syncs with Blender for hand edits, and talks to the live Editor over a local bridge.
+2. **Layout:** the image becomes a dimensioned plan of floors, walls, ramps and zones.
+3. **Build:** C# builders inside the Unity Editor generate the greybox, ready to play.
+4. **Theme:** the Theme Kit restyles the level from one reference image.
+5. **Iterate:** a desktop studio manages candidates, syncs with Blender for hand edits, and talks to the live Editor.
 
-It ships as a UPM package (`com.breadcrumbs.blockout-studio`), so it can be dropped into any Unity 6 project.
+## Next up
 
-## Built with AI
-
-The tool started life as a Claude Code skill (image to Unity blockout) and grew into a standalone app. Claude Code drove the Unity Editor through the Unity CLI during development, which let me test every builder change in-engine straight away.
+It's a personal tool and very much a work in progress. On the list: better layout reading from rough sketches, smarter traversal checks (can the player actually reach every platform?), and a cleaner one-click flow inside the Editor.

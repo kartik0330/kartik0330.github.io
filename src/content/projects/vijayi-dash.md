@@ -13,7 +13,7 @@ highlights:
   - Used the Observer pattern to avoid runtime exceptions and unnecessary per-tick memory allocations.
   - Implemented physics-based collision detection with primitive colliders and Rigidbody components.
   - Optimised performance using profiling-led techniques.
-order: 5
+order: 9
 ---
 
 ## Overview

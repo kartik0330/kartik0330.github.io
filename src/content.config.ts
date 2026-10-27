@@ -15,6 +15,10 @@ const projects = defineCollection({
       year: z.number(),
       stack: z.array(z.string()),
       highlights: z.array(z.string()),
+      // Shown as a badge on cards: a live game, or personal work still being built.
+      status: z.enum(['live', 'in-progress']).optional(),
+      // Headline numbers shown on the card (useful for NDA work with no screenshots).
+      stats: z.array(z.object({ value: z.string(), label: z.string() })).default([]),
       cover: image().optional(),
       coverAlt: z.string().optional(),
       gallery: z.array(z.object({ src: image(), caption: z.string() })).default([]),

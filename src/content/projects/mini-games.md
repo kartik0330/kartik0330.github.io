@@ -4,21 +4,21 @@ summary: Network-synced multiplayer mini-games with real-time path generation an
 category: professional
 org: Liquidnitro Games
 role: Software Engineer II
-period: Jun 2025 – Present
+period: Jun 2025 – Nov 2025
 year: 2026
 stack: [Unity 3D, C#, Photon Fusion, Perforce]
 highlights:
   - Designed and implemented network-synced gameplay mechanics using Photon Fusion, keeping dynamic player and environment interactions in sync across all clients.
   - Developed a dynamic path generation system and an obstacle hit-detection and avoidance system that adapts in real time to gameplay, for both player and AI navigation.
   - Worked closely with designers and artists to optimise the performance and latency of multiplayer interactions.
-featured: true
-order: 3
+featured: false
+order: 6
 confidential: true
 ---
 
 ## Overview
 
-At Liquidnitro Games I work on network-synced multiplayer mini-games in Unity. Details of unreleased titles are under NDA, so this page covers the engineering only.
+From Jun to Nov 2025 at Liquidnitro Games I worked on network-synced multiplayer mini-games in Unity. Details of unreleased titles are under NDA, so this page covers the engineering only.
 
 ## Focus areas
 

@@ -43,7 +43,8 @@ const image = ogImage ? new URL(ogImage, Astro.site).href : undefined;
       href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Space+Grotesk:wght@500;600;700&display=swap"
     />
     <script is:inline>
-      // Apply a saved theme before first paint to avoid a flash.
+      // Mark JS as available (enables reveal animations), then apply a saved theme before first paint.
+      document.documentElement.classList.add('js');
       try {
         const t = localStorage.getItem('theme');
         if (t === 'light' || t === 'dark') document.documentElement.dataset.theme = t;
@@ -57,5 +58,8 @@ const image = ogImage ? new URL(ogImage, Astro.site).href : undefined;
       <slot />
     </main>
     <Footer />
+    <script>
+      import '../scripts/game';
+    </script>
   </body>
 </html>

@@ -7,11 +7,11 @@ const projectsFor = (org: string) =>
   projects.filter((p) => p.data.category === 'professional' && p.data.org === org);
 ---
 
-<section class="section" id="experience" aria-labelledby="experience-title">
+<section class="section" id="experience" aria-labelledby="experience-title" data-level="3" data-level-name="Experience">
   <div class="container">
-    <p class="eyebrow">Experience</p>
+    <p class="eyebrow"><span class="lv">LV 03</span>Experience</p>
     <h2 class="section-title" id="experience-title">Where I've shipped games</h2>
-    <p class="section-lede">Six years across multiplayer, real-money and mobile titles, from Roblox and PUN to Photon Fusion.</p>
+    <p class="section-lede">Six years across LiveOps, multiplayer, real-money and mobile titles, from Roblox and PUN to Photon Fusion and Lua.</p>
 
     <ol class="timeline">
       {
@@ -20,7 +20,7 @@ const projectsFor = (org: string) =>
             <div class="when">
               {role.start} – {role.end}
             </div>
-            <div class="card">
+            <div class="card" data-reveal>
               <h3>
                 {role.title} <span class="at">@ {role.org}</span>
               </h3>

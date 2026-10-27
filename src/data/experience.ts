@@ -17,9 +17,9 @@ export const experience: Role[] = [
     title: 'Software Engineer II',
     start: 'Jun 2025',
     end: 'Present',
-    stack: ['Unity 3D', 'C#', 'Photon Fusion', 'Perforce', 'Visual Studio'],
+    stack: ['Unity', 'C#', 'Lua', 'LuaPerfect', 'Excel configs', 'Photon Fusion', 'VS Code', 'Claude Code'],
     summary:
-      'Building network-synced multiplayer mini-games: netcode, real-time path generation and obstacle systems for players and AI.',
+      'Now shipping gameplay on a live mobile title (Feb 2026 onwards), after feature work on an unreleased title and network-synced multiplayer mini-games.',
   },
   {
     org: 'Arrise Solutions Pvt. Ltd.',
@@ -35,7 +35,7 @@ export const experience: Role[] = [
     start: 'Mar 2023',
     end: 'May 2023',
     stack: ['Unity 3D', 'C#', 'SignalR', 'GitHub Desktop'],
-    summary: 'Unity development with SignalR-based real-time networking.',
+    summary: 'Full-stack development on a re-skinned crash-style casino game for mobile, with SignalR real-time networking.',
   },
   {
     org: 'Totality Corp',

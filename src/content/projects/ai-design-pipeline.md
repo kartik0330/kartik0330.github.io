@@ -2,7 +2,7 @@
 title: AI Game-Design Pipeline and gameprod
 summary: A Claude Code game-design pipeline with critic agents and a dashboard, plus a local production tracker for tasks, bugs, playtests and builds.
 category: personal
-org: BreadCrumbs (indie)
+org: Solo project
 role: Solo developer
 period: Sep 2026 – Oct 2026
 year: 2026

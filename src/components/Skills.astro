@@ -2,14 +2,14 @@
 import { skills } from '../data/skills';
 ---
 
-<section class="section" id="skills" aria-labelledby="skills-title">
+<section class="section" id="skills" aria-labelledby="skills-title" data-level="6" data-level-name="Toolbox">
   <div class="container">
-    <p class="eyebrow">Skills</p>
+    <p class="eyebrow"><span class="lv">LV 06</span>Skills</p>
     <h2 class="section-title" id="skills-title">Toolbox</h2>
     <div class="groups">
       {
         skills.map((g) => (
-          <div class="group">
+          <div class="group" data-reveal>
             <h3>{g.group}</h3>
             <ul class="chip-list">
               {g.items.map((s) => (

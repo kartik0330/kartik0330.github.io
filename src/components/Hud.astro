@@ -1,0 +1,231 @@
+---
+// Level HUD for the home page: each section with data-level is a level, scroll
+// progress is XP, and reaching a new level pops a toast (and a sound, if on).
+// Decorative only, so it is hidden from assistive tech.
+---
+
+<div class="hud" data-hud aria-hidden="true">
+  <div class="row">
+    <span class="lv">LV <b data-hud-level>1</b></span>
+    <span class="name" data-hud-name>Start</span>
+    <span class="xp"><b data-hud-xp>0</b> XP</span>
+  </div>
+  <div class="bar"><span data-hud-bar></span></div>
+</div>
+<div class="toast" data-hud-toast aria-hidden="true"></div>
+
+<script>
+  import { sfx } from '../scripts/game';
+
+  const hud = document.querySelector<HTMLElement>('[data-hud]')!;
+  const levelEl = hud.querySelector<HTMLElement>('[data-hud-level]')!;
+  const nameEl = hud.querySelector<HTMLElement>('[data-hud-name]')!;
+  const xpEl = hud.querySelector<HTMLElement>('[data-hud-xp]')!;
+  const bar = hud.querySelector<HTMLElement>('[data-hud-bar]')!;
+  const toast = document.querySelector<HTMLElement>('[data-hud-toast]')!;
+  const levels = [...document.querySelectorAll<HTMLElement>('[data-level]')];
+  const MAX_XP = 1000;
+
+  let best = 0; // furthest progress reached, 0..1: XP never goes down
+  let topLevel = 1;
+  let finished = false;
+  let toastTimer = 0;
+
+  function showToast(title: string, sub: string, done = false) {
+    toast.innerHTML = `<span class="t-title">${title}</span><span class="t-sub">${sub}</span>`;
+    toast.classList.toggle('done', done);
+    toast.classList.remove('show');
+    void toast.offsetWidth; // restart the pop animation
+    toast.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = window.setTimeout(() => toast.classList.remove('show'), 2200);
+  }
+
+  function update() {
+    const max = document.documentElement.scrollHeight - innerHeight;
+    const progress = max > 0 ? Math.min(1, scrollY / max) : 1;
+    best = Math.max(best, progress);
+
+    let current = levels[0];
+    for (const el of levels) if (el.getBoundingClientRect().top < innerHeight * 0.45) current = el;
+    const level = Number(current?.dataset.level ?? 1);
+
+    levelEl.textContent = String(level);
+    nameEl.textContent = current?.dataset.levelName ?? '';
+    xpEl.textContent = String(Math.round(best * MAX_XP));
+    bar.style.transform = `scaleX(${best})`;
+    hud.classList.toggle('active', scrollY > 40);
+
+    if (level > topLevel) {
+      topLevel = level;
+      showToast('Level up!', `LV ${level} · ${current.dataset.levelName}`);
+      hud.classList.remove('bump');
+      void hud.offsetWidth;
+      hud.classList.add('bump');
+      sfx.levelUp();
+    }
+    if (!finished && best > 0.985) {
+      finished = true;
+      showToast('Run complete', `${MAX_XP} XP · every level explored`, true);
+      sfx.complete();
+    }
+  }
+
+  let queued = false;
+  const onScroll = () => {
+    if (queued) return;
+    queued = true;
+    requestAnimationFrame(() => {
+      queued = false;
+      update();
+    });
+  };
+  addEventListener('scroll', onScroll, { passive: true });
+  addEventListener('resize', onScroll);
+  update();
+</script>
+
+<style>
+  .hud {
+    position: fixed;
+    left: 16px;
+    bottom: 16px;
+    z-index: 40;
+    width: 230px;
+    padding: 9px 12px 10px;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    background: color-mix(in srgb, var(--surface) 88%, transparent);
+    backdrop-filter: blur(10px);
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    color: var(--text-muted);
+    box-shadow: 0 10px 30px rgb(0 0 0 / 0.25);
+    opacity: 0;
+    transform: translateY(12px);
+    transition:
+      opacity 0.3s ease,
+      transform 0.3s ease;
+    pointer-events: none;
+  }
+  .hud.active {
+    opacity: 1;
+    transform: none;
+  }
+  .hud.bump {
+    animation: bump 0.45s cubic-bezier(0.3, 1.6, 0.5, 1);
+  }
+  .row {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    margin-bottom: 6px;
+    white-space: nowrap;
+  }
+  .lv {
+    color: var(--accent);
+    font-weight: 500;
+  }
+  .lv b {
+    font-size: 0.9rem;
+  }
+  .name {
+    color: var(--text);
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .xp {
+    margin-left: auto;
+  }
+  .xp b {
+    color: var(--accent-3);
+    font-weight: 500;
+  }
+  .bar {
+    height: 6px;
+    border-radius: 999px;
+    background: var(--surface-2);
+    overflow: hidden;
+  }
+  .bar span {
+    display: block;
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent), var(--accent-3));
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.2s ease-out;
+  }
+
+  .toast {
+    position: fixed;
+    top: 80px;
+    left: 50%;
+    z-index: 60;
+    display: grid;
+    justify-items: center;
+    padding: 10px 22px;
+    border: 1px solid var(--accent);
+    border-radius: 12px;
+    background: color-mix(in srgb, var(--surface) 92%, transparent);
+    backdrop-filter: blur(10px);
+    box-shadow: var(--glow), 0 12px 32px rgb(0 0 0 / 0.3);
+    pointer-events: none;
+    opacity: 0;
+    transform: translate(-50%, -16px) scale(0.9);
+  }
+  .toast.done {
+    border-color: var(--accent-3);
+  }
+  .toast.show {
+    animation: toast 2.2s ease forwards;
+  }
+  .toast :global(.t-title) {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 1.05rem;
+    color: var(--accent);
+    letter-spacing: 0.02em;
+  }
+  .toast.done :global(.t-title) {
+    color: var(--accent-3);
+  }
+  .toast :global(.t-sub) {
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    color: var(--text-muted);
+  }
+
+  @keyframes bump {
+    40% {
+      transform: scale(1.06);
+      border-color: var(--accent);
+    }
+  }
+  @keyframes toast {
+    0% {
+      opacity: 0;
+      transform: translate(-50%, -16px) scale(0.9);
+    }
+    12%,
+    80% {
+      opacity: 1;
+      transform: translate(-50%, 0) scale(1);
+    }
+    100% {
+      opacity: 0;
+      transform: translate(-50%, -8px) scale(0.98);
+    }
+  }
+
+  @media (max-width: 520px) {
+    .hud {
+      left: 12px;
+      right: auto;
+      bottom: 12px;
+      width: 168px;
+    }
+    .name {
+      display: none;
+    }
+  }
+</style>

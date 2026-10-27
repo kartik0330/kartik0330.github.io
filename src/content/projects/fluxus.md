@@ -2,7 +2,7 @@
 title: Fluxus (architecture)
 summary: A DI-first Unity 6 architecture for a multiplayer traversal sandbox where players author their own routes with runtime Bezier control points.
 category: personal
-org: BreadCrumbs (indie)
+org: Solo project
 role: Solo developer
 period: May 2026 – Jun 2026
 year: 2026

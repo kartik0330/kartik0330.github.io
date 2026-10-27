@@ -3,27 +3,28 @@ import ProjectCard from './ProjectCard.astro';
 import { getProjects, categoryLabel } from '../lib/site';
 
 const projects = await getProjects();
-const featured = projects.filter((p) => p.data.featured && p.data.cover);
+const featured = projects.filter((p) => p.data.featured);
 const rest = projects.filter((p) => !featured.includes(p));
 const categories = [...new Set(rest.map((p) => p.data.category))];
 ---
 
-<section class="section" id="projects" aria-labelledby="projects-title">
+<section class="section" id="projects" aria-labelledby="projects-title" data-level="4" data-level-name="Projects">
   <div class="container">
-    <p class="eyebrow">Projects</p>
+    <p class="eyebrow"><span class="lv">LV 04</span>Projects</p>
     <h2 class="section-title" id="projects-title">Selected work</h2>
     <p class="section-lede">
-      2026 personal work from my indie label BreadCrumbs, followed by professional projects. Employer work is described
+      What I'm shipping at work, what I'm building on my own time, and the games before that. Employer work is described
       at the engineering level only.
     </p>
 
     <div class="featured">
-      {featured.map((p) => <ProjectCard project={p} large />)}
+      {featured.map((p, i) => <ProjectCard project={p} large wide={i === 0 && featured.length % 2 === 1} />)}
     </div>
 
     {
       rest.length > 0 && (
         <>
+          <h3 class="subhead">Earlier and supporting work</h3>
           <div class="filters" role="group" aria-label="Filter projects" hidden={categories.length < 2}>
             <button type="button" aria-pressed="true" data-filter="all">
               All
@@ -62,7 +63,15 @@ const categories = [...new Set(rest.map((p) => p.data.category))];
     display: grid;
     grid-template-columns: repeat(2, 1fr);
     gap: 24px;
-    margin-bottom: 48px;
+    margin-bottom: 56px;
+  }
+  .featured > :global(.wide) {
+    grid-column: 1 / -1;
+  }
+  .subhead {
+    font-size: 1.1rem;
+    color: var(--text-muted);
+    margin-bottom: 16px;
   }
   .filters {
     display: flex;
@@ -88,6 +97,9 @@ const categories = [...new Set(rest.map((p) => p.data.category))];
     background: var(--accent);
     border-color: var(--accent);
     color: var(--accent-ink);
+  }
+  .filters[hidden] {
+    display: none;
   }
   .grid {
     display: grid;

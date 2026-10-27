@@ -3,7 +3,7 @@ import { profile } from '../data/profile';
 import { url } from '../lib/site';
 ---
 
-<section class="hero" id="top" aria-labelledby="hero-title">
+<section class="hero" id="top" aria-labelledby="hero-title" data-level="1" data-level-name="Start">
   <div class="hero-canvas" data-hero-canvas aria-hidden="true"></div>
   <div class="hero-scrim" aria-hidden="true"></div>
 
@@ -11,19 +11,19 @@ import { url } from '../lib/site';
     <p class="eyebrow">{profile.role} · {profile.location}</p>
     <h1 id="hero-title">
       <span class="name">{profile.name}</span>
-      <span class="title">Unity game developer building <em>multiplayer</em>, <em class="alt">physics</em> and <em class="lime">tools</em>.</span>
+      <span class="title">Gameplay programmer shipping <em>LiveOps</em>, <em class="alt">multiplayer</em> and <em class="lime">tools</em>.</span>
     </h1>
     <p class="tagline">{profile.tagline}</p>
     <div class="cta">
-      <a class="btn btn-primary" href="#projects">See my work</a>
+      <a class="btn btn-primary" href="#projects">▶ See my work</a>
       <a class="btn btn-ghost" href={url('resume/')}>View resume</a>
     </div>
     <ul class="stats" aria-label="At a glance">
       <li><strong>{profile.yearsExperience}+</strong><span>years in game dev</span></li>
-      <li><strong>4</strong><span>studios</span></li>
-      <li><strong>Unity · C#</strong><span>Photon Fusion</span></li>
+      <li><strong>{profile.studios}</strong><span>studios</span></li>
     </ul>
   </div>
+  <a class="press-start" href="#about">Press start <span aria-hidden="true">▼</span></a>
 </section>
 
 <script>
@@ -149,7 +149,34 @@ import { url } from '../lib/site';
     letter-spacing: 0.08em;
   }
 
+  .press-start {
+    position: absolute;
+    left: 50%;
+    bottom: 22px;
+    transform: translateX(-50%);
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    text-decoration: none;
+    color: var(--text-muted);
+    padding: 6px 12px;
+    animation: blink 1.4s steps(2, jump-none) infinite;
+  }
+  .press-start:hover {
+    color: var(--accent);
+    animation: none;
+  }
+  @keyframes blink {
+    50% {
+      opacity: 0.25;
+    }
+  }
+
   @media (max-width: 760px) {
+    .press-start {
+      display: none;
+    }
     .hero {
       align-items: flex-start;
     }

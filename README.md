@@ -16,7 +16,7 @@ npm run dev        # http://localhost:4321
 | Name, contact, bio, summary, education | `src/data/profile.ts` |
 | Jobs (newest first) | `src/data/experience.ts` |
 | Skills | `src/data/skills.ts` |
-| "2026 in review" timeline | `src/data/timeline.ts` (`show: true` to publish an entry) |
+| "2026 quest log" (main quest, side quests, skill unlocks) | `src/data/quests.ts` (`show: true` to publish a quest) |
 | Projects (one Markdown file each) | `src/content/projects/*.md` |
 | Project screenshots | `src/assets/projects/<slug>/` |
 | 3D hero scene | `src/scripts/hero-scene.ts` |

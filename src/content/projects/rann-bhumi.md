@@ -11,7 +11,7 @@ highlights:
   - Developed a deathmatch combat game with five character classes, each with its own weapons and abilities.
   - Built physics-based locomotion, modular weapon systems, UI screens and dynamic camera behaviours.
   - Integrated PvP networking, host migration, RPCs for client- and server-specific logic, and game state synchronisation.
-order: 6
+order: 10
 ---
 
 ## Overview

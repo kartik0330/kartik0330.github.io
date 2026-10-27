@@ -3,17 +3,17 @@ import { profile } from '../data/profile';
 const facts = [
   { k: 'Role', v: `${profile.role}, Liquidnitro Games` },
   { k: 'Based in', v: profile.location },
-  { k: 'Experience', v: `${profile.yearsExperience}+ years · 4 studios` },
-  { k: 'Indie label', v: profile.studio.name },
+  { k: 'Experience', v: `${profile.yearsExperience}+ years · ${profile.studios} studios` },
+  { k: 'Now playing', v: 'A LiveOps mobile title (under NDA)' },
   { k: 'Education', v: 'B.Tech ECE, IIIT Jabalpur' },
 ];
 ---
 
-<section class="section" id="about" aria-labelledby="about-title">
+<section class="section" id="about" aria-labelledby="about-title" data-level="2" data-level-name="About">
   <div class="container about">
     <div>
-      <p class="eyebrow">About</p>
-      <h2 class="section-title" id="about-title">Gameplay engineer with a tools habit</h2>
+      <p class="eyebrow"><span class="lv">LV 02</span>About</p>
+      <h2 class="section-title" id="about-title">Gameplay programmer with a tools habit</h2>
       {profile.about.map((p) => <p class="para">{p}</p>)}
     </div>
     <dl class="facts">

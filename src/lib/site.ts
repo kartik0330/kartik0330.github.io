@@ -21,4 +21,9 @@ export const categoryLabel: Record<Project['data']['category'], string> = {
   learning: 'Learning',
 };
 
+export const statusLabel: Record<NonNullable<Project['data']['status']>, string> = {
+  live: 'Live',
+  'in-progress': 'In progress',
+};
+
 export const resumePdf = 'Kartik_Mangal_Resume_2026.pdf';

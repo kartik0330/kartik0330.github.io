@@ -1,0 +1,220 @@
+---
+import { questLog, year } from '../data/quests';
+import { getProjects, url } from '../lib/site';
+
+const published = new Set((await getProjects()).map((p) => p.id));
+const tracks = questLog
+  .map((t) => ({ ...t, quests: t.quests.filter((q) => q.show) }))
+  .filter((t) => t.quests.length > 0);
+const all = tracks.flatMap((t) => t.quests);
+const done = all.filter((q) => q.status === 'complete').length;
+---
+
+<section class="section year" id="year" aria-labelledby="year-title" data-level="5" data-level-name="Quest log">
+  <div class="container">
+    <p class="eyebrow"><span class="lv">LV 05</span>{year} quest log</p>
+    <h2 class="section-title" id="year-title">What I built this year</h2>
+    <p class="section-lede">
+      The main quest at work, side quests on my own time, and the skills unlocked along the way.
+      <span class="tally">{done} complete · {all.length - done} in progress</span>
+    </p>
+
+    <div class="tracks">
+      {
+        tracks.map((t) => {
+          const complete = t.quests.filter((q) => q.status === 'complete').length;
+          return (
+            <section class:list={['track', t.id]} aria-labelledby={`track-${t.id}`} data-reveal>
+              <header>
+                <h3 id={`track-${t.id}`}>{t.label}</h3>
+                <p>{t.blurb}</p>
+                <div class="progress" aria-hidden="true">
+                  <span style={`--p: ${complete / t.quests.length}`} />
+                </div>
+              </header>
+              <ol>
+                {t.quests.map((q) => (
+                  <li class:list={['quest', q.status]}>
+                    <span class="mark" aria-hidden="true">
+                      {q.status === 'complete' ? '✓' : ''}
+                    </span>
+                    <div>
+                      <h4>
+                        {q.project && published.has(q.project) ? (
+                          <a href={url(`projects/${q.project}/`)}>{q.title}</a>
+                        ) : (
+                          q.title
+                        )}
+                      </h4>
+                      <p>{q.detail}</p>
+                      <p class="meta">
+                        <span class="state">{q.status === 'complete' ? 'Complete' : 'In progress'}</span>
+                        <span>{q.when}</span>
+                        {q.reward && <span class="reward">★ {q.reward}</span>}
+                      </p>
+                    </div>
+                  </li>
+                ))}
+              </ol>
+            </section>
+          );
+        })
+      }
+    </div>
+  </div>
+</section>
+
+<style>
+  .year {
+    background:
+      linear-gradient(var(--border) 1px, transparent 1px) 0 0 / 44px 44px,
+      linear-gradient(90deg, var(--border) 1px, transparent 1px) 0 0 / 44px 44px,
+      var(--bg-2);
+    background-blend-mode: normal;
+  }
+  .year :global(.container) {
+    position: relative;
+  }
+  .tally {
+    display: inline-block;
+    margin-left: 6px;
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    color: var(--accent-3);
+  }
+  .tracks {
+    display: grid;
+    grid-template-columns: 1.25fr 1fr 1fr;
+    gap: 18px;
+    align-items: start;
+  }
+  .track {
+    --track: var(--accent);
+    border: 1px solid var(--border);
+    border-top: 3px solid var(--track);
+    border-radius: var(--radius);
+    background: var(--surface);
+    padding: 20px;
+  }
+  .track.side {
+    --track: var(--accent-2);
+  }
+  .track.skill {
+    --track: var(--accent-3);
+  }
+  header h3 {
+    font-size: 0.82rem;
+    font-family: var(--font-mono);
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--track);
+    margin: 0 0 4px;
+  }
+  header p {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    margin: 0 0 12px;
+  }
+  .progress {
+    height: 6px;
+    border-radius: 999px;
+    background: var(--surface-2);
+    overflow: hidden;
+    margin-bottom: 18px;
+  }
+  .progress span {
+    display: block;
+    height: 100%;
+    width: calc(var(--p) * 100%);
+    min-width: 8%;
+    background: var(--track);
+    border-radius: inherit;
+  }
+  ol {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 16px;
+  }
+  .quest {
+    display: grid;
+    grid-template-columns: 22px 1fr;
+    gap: 12px;
+  }
+  .mark {
+    width: 22px;
+    height: 22px;
+    margin-top: 2px;
+    display: grid;
+    place-items: center;
+    border-radius: 6px;
+    border: 2px solid var(--track);
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--accent-ink);
+  }
+  .complete .mark {
+    background: var(--track);
+  }
+  .active .mark::after {
+    content: '';
+    width: 8px;
+    height: 8px;
+    border-radius: 2px;
+    background: var(--track);
+    animation: pulse 1.6s ease-in-out infinite;
+  }
+  h4 {
+    font-size: 1rem;
+    margin: 0 0 4px;
+  }
+  h4 a {
+    color: var(--text);
+    text-decoration: none;
+    background: linear-gradient(var(--track), var(--track)) 0 100% / 0 2px no-repeat;
+    transition: background-size 0.25s ease;
+  }
+  h4 a:hover {
+    background-size: 100% 2px;
+  }
+  .quest p {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    margin: 0 0 6px;
+  }
+  .quest .meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px 10px;
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    margin: 0;
+  }
+  .state {
+    color: var(--track);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+  .reward {
+    color: var(--text);
+    padding: 0 7px;
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    background: var(--surface-2);
+  }
+  @media (max-width: 980px) {
+    .tracks {
+      grid-template-columns: 1fr 1fr;
+    }
+    .track.main {
+      grid-column: 1 / -1;
+    }
+  }
+  @media (max-width: 640px) {
+    .tracks {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
