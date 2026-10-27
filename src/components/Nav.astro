@@ -76,10 +76,20 @@ const home = url('');
     } catch {}
   });
 
-  // Close the mobile menu after picking a link.
-  document.querySelectorAll<HTMLAnchorElement>('.menu a').forEach((a) =>
-    a.addEventListener('click', () => a.closest('details')?.removeAttribute('open')),
-  );
+  // Close the mobile menu after picking a link, tapping anywhere outside it, scrolling, or pressing Escape.
+  const menu = document.querySelector<HTMLDetailsElement>('.menu');
+  const closeMenu = () => menu?.removeAttribute('open');
+  menu?.querySelectorAll('a').forEach((a) => a.addEventListener('click', closeMenu));
+  document.addEventListener('pointerdown', (e) => {
+    if (menu?.open && !menu.contains(e.target as Node)) closeMenu();
+  });
+  addEventListener('scroll', () => menu?.open && closeMenu(), { passive: true });
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && menu?.open) {
+      closeMenu();
+      menu.querySelector('summary')?.focus();
+    }
+  });
 </script>
 
 <style>

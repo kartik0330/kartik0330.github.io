@@ -6,31 +6,55 @@ const canHover = matchMedia('(hover: hover) and (pointer: fine)').matches;
 const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 let ctx: AudioContext | null = null;
+let master: GainNode | null = null;
 let soundOn = false;
 try {
   soundOn = localStorage.getItem(SOUND_KEY) === 'on';
 } catch {}
 
+// Mobile browsers only start audio from inside a tap, and iOS mutes Web Audio when the
+// ringer switch is off unless the page asks for "playback". So the context is created
+// and unlocked on the first tap, and phone speakers get a louder master volume.
 function audio(): AudioContext | null {
   if (!soundOn) return null;
-  ctx ??= new AudioContext();
-  if (ctx.state === 'suspended') void ctx.resume();
+  if (!ctx) {
+    const nav = navigator as Navigator & { audioSession?: { type: string } };
+    try {
+      if (nav.audioSession) nav.audioSession.type = 'playback';
+    } catch {}
+    const Ctor = window.AudioContext ?? (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
+    ctx = new Ctor();
+    master = ctx.createGain();
+    master.gain.value = canHover ? 1 : 3;
+    master.connect(ctx.destination);
+    // A one-sample silent buffer started inside the gesture unlocks output on iOS.
+    const unlock = ctx.createBufferSource();
+    unlock.buffer = ctx.createBuffer(1, 1, 22050);
+    unlock.connect(ctx.destination);
+    unlock.start(0);
+  }
+  if (ctx.state !== 'running') void ctx.resume().catch(() => {});
   return ctx;
 }
 
 function tone(freq: number, dur: number, type: OscillatorType, gain: number, delay = 0) {
   const ac = audio();
-  if (!ac) return;
-  const t = ac.currentTime + delay;
-  const osc = ac.createOscillator();
-  const amp = ac.createGain();
-  osc.type = type;
-  osc.frequency.setValueAtTime(freq, t);
-  amp.gain.setValueAtTime(gain, t);
-  amp.gain.exponentialRampToValueAtTime(0.0001, t + dur);
-  osc.connect(amp).connect(ac.destination);
-  osc.start(t);
-  osc.stop(t + dur + 0.02);
+  if (!ac || !master) return;
+  const play = () => {
+    const t = ac.currentTime + delay;
+    const osc = ac.createOscillator();
+    const amp = ac.createGain();
+    osc.type = type;
+    osc.frequency.setValueAtTime(freq, t);
+    amp.gain.setValueAtTime(gain, t);
+    amp.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+    osc.connect(amp).connect(master!);
+    osc.start(t);
+    osc.stop(t + dur + 0.02);
+  };
+  // A context that is still resuming would swallow the first notes, so wait for it.
+  if (ac.state === 'running') play();
+  else ac.resume().then(play, () => {});
 }
 
 export const sfx = {
@@ -59,6 +83,15 @@ function initSound() {
     b.setAttribute('aria-pressed', String(soundOn));
     b.addEventListener('click', () => setSound(!soundOn));
   });
+
+  // If sound was left on from an earlier visit, unlock audio on the first tap anywhere,
+  // so scroll-driven sounds (level ups) can play on phones too.
+  const unlock = () => {
+    if (!soundOn) return;
+    audio();
+    ['touchend', 'pointerup', 'keydown'].forEach((t) => removeEventListener(t, unlock));
+  };
+  ['touchend', 'pointerup', 'keydown'].forEach((t) => addEventListener(t, unlock, { passive: true }));
 
   const interactive = 'a, button, summary, [data-sfx]';
   let lastHover: Element | null = null;
